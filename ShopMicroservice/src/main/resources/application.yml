@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: ShopService
+  main:
+    allow-bean-definition-overriding: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,beans,loggers,conditions,caches
+server:
+  port: 8080
