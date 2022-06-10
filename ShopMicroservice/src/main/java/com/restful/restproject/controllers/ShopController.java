@@ -7,13 +7,9 @@ import com.restful.restproject.models.Shop;
 import com.restful.restproject.services.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
-
 
 /**
  * Basic class processing queries and interacting with microservices
@@ -29,13 +25,14 @@ public class ShopController {
     private static final String URL_PRODUCT = "http://localhost:8180/product";
 
     @Autowired
-    public ShopController( RestTemplate restTemplate,Service service) {
+    public ShopController(RestTemplate restTemplate, Service service) {
         this.restTemplate = restTemplate;
         this.service = service;
     }
 
     /**
      * searching orders from client(from another microservice)
+     *
      * @param clientId
      * @param productId
      * @return Orders
@@ -62,6 +59,7 @@ public class ShopController {
 
     /**
      * saving or updating client from another microservice
+     *
      * @param id
      * @param name
      * @param client
@@ -69,11 +67,6 @@ public class ShopController {
     @PostMapping("/saveUpdateClient")
     public void addOrUpdateClient(@RequestParam("id") Long id, @RequestParam("name") String name,
                                   Client client) {
-        // restTemplate.put(); put для обновления если обьект уже есть
-        if (id == null || name == null) {
-            log.info("try again please");
-            return;
-        }
         ResponseEntity<String> rsp = restTemplate.postForEntity(URL_CLIENT + "/saveClient" + "/" + id + "/" + name,
                 client, String.class);
         System.out.println(rsp.getBody());
@@ -90,7 +83,6 @@ public class ShopController {
     }
 
     /**
-     *
      * @param id
      * @return ResponseEntity
      * can be also done with getForObject();

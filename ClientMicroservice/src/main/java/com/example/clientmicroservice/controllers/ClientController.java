@@ -71,8 +71,8 @@ public class ClientController {
             log.info("error saving a client");
         }
 
-        log.info("successfully saved a client");
         Client client = new Client(id,name);
+        log.info("successfully saved a client");
         clientService.save(client);
     }
 }

@@ -23,4 +23,7 @@ public class Service {
         return shopRepository.findById(id);
     }
 
+    public Long getClientId(long id) {
+        return shopRepository.getId(id);
+    }
 }

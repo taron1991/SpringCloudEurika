@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Repository
-public interface ShopRepository extends JpaRepository<Shop,Integer> {
+public interface ShopRepository extends JpaRepository<Shop, Integer> {
 
     Shop findByName(String name);
 
-    @Query(value = "select * from shop where stuff >:more",nativeQuery = true)
+    @Query(value = "select * from shop where stuff >:more", nativeQuery = true)
     List<Shop> getMoreThan(@Param("more") Integer more);
 
+    @Query(value = "select id from client where id=:id", nativeQuery = true)
+    Long getId(@Param("id") long id);
 }
