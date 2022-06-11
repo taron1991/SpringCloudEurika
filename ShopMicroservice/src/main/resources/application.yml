@@ -10,3 +10,12 @@ management:
         include: health,info,env,beans,loggers,conditions,caches
 server:
   port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    instance-id: ShopService-instance
+

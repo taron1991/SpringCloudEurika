@@ -4,12 +4,12 @@ import com.restful.restproject.models.Client;
 import com.restful.restproject.models.Orders;
 import com.restful.restproject.models.Product;
 import com.restful.restproject.models.Shop;
+import com.restful.restproject.otherConfigs.RestTemplateComponent;
 import com.restful.restproject.services.Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Basic class processing queries and interacting with microservices
@@ -20,13 +20,13 @@ import org.springframework.web.client.RestTemplate;
 public class ShopController {
 
     private Service service;
-    private RestTemplate restTemplate;
+    private RestTemplateComponent restTemplateComponent;
     private static final String URL_CLIENT = "http://localhost:8282/client";
     private static final String URL_PRODUCT = "http://localhost:8180/product";
 
     @Autowired
-    public ShopController(RestTemplate restTemplate, Service service) {
-        this.restTemplate = restTemplate;
+    public ShopController(Service service, RestTemplateComponent restTemplateComponent) {
+        this.restTemplateComponent = restTemplateComponent;
         this.service = service;
     }
 
@@ -45,8 +45,8 @@ public class ShopController {
         log.info("in the method");
 
         Shop shop = service.getShopById((int) id).get();
-        Client client = restTemplate.getForObject(URL_CLIENT + "/byId/" + clientId, Client.class);
-        Product product = restTemplate.getForObject(URL_PRODUCT + "/byId/" + productId, Product.class);
+        Client client = restTemplateComponent.loadBalanced().getForObject(URL_CLIENT + "/byId/" + clientId, Client.class);
+        Product product = restTemplateComponent.loadBalanced().getForObject(URL_PRODUCT + "/byId/" + productId, Product.class);
 
         Orders orders = new Orders();
         orders.setClient(client);
@@ -67,7 +67,7 @@ public class ShopController {
     @PostMapping("/saveUpdateClient")
     public void addOrUpdateClient(@RequestParam("id") Long id, @RequestParam("name") String name,
                                   Client client) {
-        ResponseEntity<String> rsp = restTemplate.postForEntity(URL_CLIENT + "/saveClient" + "/" + id + "/" + name,
+        ResponseEntity<String> rsp = restTemplateComponent.loadBalanced().postForEntity(URL_CLIENT + "/saveClient" + "/" + id + "/" + name,
                 client, String.class);
         System.out.println(rsp.getBody());
     }
@@ -77,11 +77,10 @@ public class ShopController {
         if (id == null) {
             log.error("there's no such a product");
         } else {
-            restTemplate.delete(URL_PRODUCT + "/deleteId/" + id);
+            restTemplateComponent.loadBalanced().delete(URL_PRODUCT + "/deleteId/" + id);
             log.info("id {} successfully deleted ", id);
         }
     }
-
     /**
      * @param id
      * @return ResponseEntity
@@ -95,7 +94,7 @@ public class ShopController {
             log.error("there's no such a client with id {}", id);
             return null;
         } else {
-            forEntity = restTemplate.getForEntity(URL_CLIENT + "/byId/" + id, Client.class);
+            forEntity = restTemplateComponent.loadBalanced().getForEntity(URL_CLIENT + "/byId/" + id, Client.class);
             log.info("Client successfully found with id {}", id);
 
         }

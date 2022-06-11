@@ -1,0 +1,14 @@
+eureka:
+  instance:
+    instance-id: ClientService-instance
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+
+server:
+  port: 8282
+
+spring:
+  application:
+    name: ClientService
